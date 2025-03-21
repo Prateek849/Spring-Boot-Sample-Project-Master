@@ -44,3 +44,12 @@ jobs:
     # Package the Spring Boot application (optional, to build the JAR)
     - name: Build Spring Boot JAR
       run: mvn package
+      - name: Cache Maven dependencies
+  uses: actions/cache@v3  # Try using the latest version
+  with:
+    path: ~/.m2/repository
+    key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+    restore-keys: |
+      ${{ runner.os }}-maven-
+
+
