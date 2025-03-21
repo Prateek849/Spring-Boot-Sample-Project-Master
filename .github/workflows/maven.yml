@@ -1,0 +1,46 @@
+name: Build and Test Maven Project
+
+on:
+  push:
+    branches:
+      - main  # Trigger this action on push to the main branch
+  pull_request:
+    branches:
+      - main  # Trigger this action on pull request to the main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # You can change this to other environments, like windows-latest or macos-latest
+    
+    steps:
+    # Checkout the repository code
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Set up JDK 8 (or any other version you're using)
+    - name: Set up JDK 8
+      uses: actions/setup-java@v2
+      with:
+        java-version: '8'
+        distribution: 'adoptopenjdk'  # Use AdoptOpenJDK or OpenJDK
+
+    # Cache dependencies to speed up the workflow (optional)
+    - name: Cache Maven dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    # Run Maven build and tests
+    - name: Build with Maven
+      run: mvn clean install
+
+    # Run tests with Maven (optional)
+    - name: Run Maven tests
+      run: mvn test
+
+    # Package the Spring Boot application (optional, to build the JAR)
+    - name: Build Spring Boot JAR
+      run: mvn package
